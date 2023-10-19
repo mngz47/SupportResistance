@@ -83,7 +83,10 @@ void OnChartEvent(const int id,const long &lparam,const double &dparam,const str
 void OnDeinit(const int reason){restart();}
 
 //
-void restart(){}
+void restart(){
+   ObjectsDeleteAll(0,objBN);
+   ChartRedraw(0);
+}
 void newReSup(datetime time,char dir,double price){
 	if( resup.dir!=0 && resup.dir!=dir )
 		drawReSup("RESUP_"+resup.dir+"_"+(int)resup.time,resup.time,resup.price,resup.time+periodSec*3,resup.price,clrYellow);
