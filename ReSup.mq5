@@ -17,8 +17,8 @@ struct_resup resup;
 
 input int resupX=7;// Resistance & Support(Power)
 
-int periodSec=PeriodSeconds(_Period);
-string objBN=MQLInfoString(MQL_PROGRAM_NAME)+"_";
+int start=0,periodSec=PeriodSeconds(_Period);
+string objBN=MQLInfoString(MQL_PROGRAM_NAME)+"_",srs[];
 
 int OnInit(){
    restart();
@@ -54,10 +54,32 @@ int OnCalculate(const int rates_total,const int prev_calculated,const datetime &
 		}
 	}
 	
+	int i=rates_total-1;
+	if(start<time[i]){
+		start=time[i];
+		for(i=ArraySize(srs)-1;i>=0;i--)
+			ObjectSetInteger(0,srs[i],OBJPROP_TIME,1,TimeCurrent()+periodSec*9);
+		ChartRedraw(0);
+	}
+	
    return(rates_total);
 }
 void OnTimer(){}
-void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam){}
+void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam){
+   switch(id){
+		case CHARTEVENT_OBJECT_CLICK:
+			if(StringFind(sparam,objBN+"RESUP")>-1){
+				if(findSRS(sparam))
+					ObjectSetInteger(0,sparam,OBJPROP_TIME,1,ObjectGetInteger(0,sparam,OBJPROP_TIME,0)+periodSec*3);
+				else{
+					setSRS(sparam);
+					ObjectSetInteger(0,sparam,OBJPROP_TIME,1,TimeCurrent()+periodSec*9);
+				}
+				ChartRedraw(0);
+			}
+			return;
+	}
+}
 void OnDeinit(const int reason){restart();}
 
 //
@@ -75,4 +97,17 @@ void drawReSup(string name,const datetime t1,const double p1,const datetime t2,c
 		ObjectSetInteger(0,name,OBJPROP_WIDTH,3);
 		ObjectSetInteger(0,name,OBJPROP_COLOR,clr);
 	}else ObjectSetInteger(0,name,OBJPROP_TIME,0,t2);
+}
+void setSRS(string name){
+	int i=ArraySize(srs);
+	ArrayResize(srs,i+1);
+	srs[i]=name;
+}
+bool findSRS(string name){
+	for(int i=ArraySize(srs)-1;i>=0;i--)
+		if(srs[i]==name){
+			ArrayRemove(srs,i,1);
+			return true;
+		}
+	return false;
 }
