@@ -17,6 +17,9 @@ struct_resup resup;
 
 input int resupX=7;// Resistance & Support(Power)
 
+int periodSec=PeriodSeconds(_Period);
+string objBN=MQLInfoString(MQL_PROGRAM_NAME)+"_";
+
 int OnInit(){
    restart();
    return(INIT_SUCCEEDED);
@@ -60,10 +63,16 @@ void OnDeinit(const int reason){restart();}
 //
 void restart(){}
 void newReSup(datetime time,char dir,double price){
-	if( resup.dir!=0 && resup.dir!=dir ){
-		// draw
-	}
+	if( resup.dir!=0 && resup.dir!=dir )
+		drawReSup("RESUP_"+resup.dir+"_"+(int)resup.time,resup.time,resup.price,resup.time+periodSec*3,resup.price,clrYellow);
 	resup.time=time;
 	resup.dir=dir;
 	resup.price=price;
+}
+void drawReSup(string name,const datetime t1,const double p1,const datetime t2,const double p2,color clr){
+	name=objBN+name;
+	if(ObjectCreate(0,name,OBJ_ARROWED_LINE,0,t1,p1,t2,p2)){
+		ObjectSetInteger(0,name,OBJPROP_WIDTH,3);
+		ObjectSetInteger(0,name,OBJPROP_COLOR,clr);
+	}else ObjectSetInteger(0,name,OBJPROP_TIME,0,t2);
 }
