@@ -29,7 +29,7 @@ int OnCalculate(const int rates_total,const int prev_calculated,const datetime &
 		restart();
 	
 	int count=rates_total-1;
-	for(int i=(prev_calculated<resupX?resupX:prev_calculated);i<count;i++){
+	for(int i=(prev_calculated<=resupX?resupX:prev_calculated-1);i<count;i++){
 	   char dir=-1;
 		if( close[i]>close[i-1] || ( close[i]==close[i-1] && close[i]>=high[i]-(high[i]-low[i])/2 ) )
 			dir=1;
