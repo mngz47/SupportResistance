@@ -9,10 +9,18 @@
 #property indicator_chart_window
 
 int OnInit(){
+   restart();
    return(INIT_SUCCEEDED);
 }
 int OnCalculate(const int rates_total,const int prev_calculated,const datetime &time[],const double &open[],const double &high[],const double &low[],const double &close[],const long &tick_volume[],const long &volume[],const int &spread[]){
+   if(prev_calculated==0)
+		restart();
+	
    return(rates_total);
 }
 void OnTimer(){}
-void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam){}void restart(){}
+void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam){}
+void OnDeinit(const int reason){restart();}
+
+//
+void restart(){}
